@@ -1,0 +1,4 @@
+# ignore source data
+*.zip
+# ignore test file
+test.py
