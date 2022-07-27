@@ -13,6 +13,8 @@ class MissionController:
     def __init__(self, robot):
         print("Creating MissionController!")
 
+        # daemon the thread beacuse it has recursion
+        # and we need to terminated after main thread finished
         self.thread_poll_position = Thread(
             target=self._poll_position, daemon=True)
 
@@ -23,9 +25,11 @@ class MissionController:
         self.current_waypoint_idx = 0
         self.calculated_robot_trajectory = []
         self.calculated_robot_trajectory.append(self.robot.get_position())
+        # used to test the last trajectory in main thread
         self.empty_trajectory = False
 
     def set_trajectory(self, trajectory):
+        # initial idx of the trajectory
         self.current_waypoint_idx = 0
         self.trajectory = trajectory
 
@@ -43,16 +47,23 @@ class MissionController:
 
         time.sleep(1)
         self.empty_trajectory = False
+        # test whether the trajectory is empty
         if self.current_waypoint_idx == len(self.trajectory):
             self.empty_trajectory = True
             self._poll_position()
         position = self.robot.get_position()
+        # skip redundency of the trajectory points
+        # when point in trajectory = current position skip
         while np.all(position == self.trajectory[self.current_waypoint_idx]):
             self.current_waypoint_idx += 1
+            # test whether the trajectory is empty
             if self.current_waypoint_idx == len(self.trajectory):
                 self.empty_trajectory = True
                 self._poll_position()
+
+        # send the new signal position to the robot
         self._send_navigation_command()
+        # update trajectory point idx
         self.current_waypoint_idx += 1
 
         self._poll_position()
@@ -62,5 +73,6 @@ class MissionController:
         print(f"Sending waypoint {self.current_waypoint_idx}")
         self.calculated_robot_trajectory.append(
             self.trajectory[self.current_waypoint_idx])
+        # send the new signal position to the robot
         self.robot.set_navigation_command(
             self.trajectory[self.current_waypoint_idx])

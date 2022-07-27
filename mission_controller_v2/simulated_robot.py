@@ -15,7 +15,6 @@ class SimulatedRobot:
         print("Creating SimulatedRobot!")
 
         self.position = initial_position
-        self.thread_update = None
 
     def get_position(self):
         return self.position

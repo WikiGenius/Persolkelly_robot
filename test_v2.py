@@ -71,13 +71,17 @@ class System:
 
             # set the trajectory comming from user input
             controller.set_trajectory(self.trajectory)
+            # to switch to thread thread_poll_position
             time.sleep(1.01)
+            # sleep main thread while thread_update terminated
             controller.sleep_till_move()
-
+        # loop over the last trajectory
         while not controller.is_finish_trajectory():
+            # to switch to thread thread_poll_position
             time.sleep(1.01)
+            # sleep main thread while thread_update terminated
             controller.sleep_till_move()
-
+        # the calculated path of the robot used in testing cases
         self.calculated_robot_trajectory = controller.get_calculated_robot_trajectory()
 
 
@@ -85,7 +89,9 @@ def test_normal_operation():
     sys = System()
     sys.run_robot()
 
+    # load actual path of the robot used in testing cases
     actual_robot_trajectory = sys.get_actual_robot_trajectory()
+    # the calculated path of the robot used in testing cases
     calculated_robot_trajectory = sys.calculated_robot_trajectory
 
     if np.all(actual_robot_trajectory.shape == calculated_robot_trajectory.shape) and np.all(actual_robot_trajectory == calculated_robot_trajectory):
