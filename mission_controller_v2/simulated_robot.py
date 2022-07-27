@@ -1,8 +1,9 @@
 
-import numpy as np
-
+'''
+Reviewed  by Muhammed El-Yamani
+Date: 27/07/2022
+'''
 import time
-import threading
 from threading import Thread
 
 import random
@@ -14,10 +15,15 @@ class SimulatedRobot:
         print("Creating SimulatedRobot!")
 
         self.position = initial_position
+        self.thread_update = None
+
     def get_position(self):
         return self.position
 
-    
+    def sleep_till_move(self):
+        if (self.thread_update.isAlive()):
+            time.sleep(2)
+
     def set_navigation_command(self, waypoint):
 
         print(f"Commanding robot to move to {waypoint}")
@@ -25,11 +31,10 @@ class SimulatedRobot:
         def update():
             # depends on speed of the robot
             time.sleep(random.uniform(1.0, 2.0))
-
             print(f"Robot is now at {waypoint}")
 
             self.position = waypoint
-        thread_update = Thread(target=update)
-        thread_update.start()
-        # thread_update.join()
-        time.sleep(2)
+        self.thread_update = Thread(target=update)
+        self.thread_update.start()
+
+        self.sleep_till_move()

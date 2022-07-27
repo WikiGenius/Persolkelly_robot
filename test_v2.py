@@ -1,9 +1,13 @@
 
+'''
+Reviewed  by Muhammed El-Yamani
+Date: 27/07/2022
+'''
 import time
 import numpy as np
 
-from mission_controller_v2.mission_controller import MissionController
-from mission_controller_v2.simulated_robot import SimulatedRobot
+from mission_controller_v2 import MissionController
+from mission_controller_v2 import SimulatedRobot
 
 '''
 input data
@@ -24,11 +28,18 @@ class System:
         self.calculated_robot_trajectory = []
 
     def __get_initial_position(self):
+        """
+        I: initial point
+        """
         l1 = list(map(float, input().strip().split(' ')))
         self.initial_position = np.array(l1)
 
     def __get_trajectory(self):
-
+        """
+        T: trajectories
+        N: data points in each trajectory
+        N data points each in line x,y: line sperated space
+        """
         T = int(input().strip())
         for i in range(T):
             l2 = []
@@ -39,6 +50,10 @@ class System:
             yield trajectory
 
     def get_actual_robot_trajectory(self):
+        '''
+        K: number actual data points for trajectory
+        K actual data points for trajectory x,y: line sperated space 
+        '''
         l = []
         K = int(input().strip())
         for j in range(K):
@@ -57,20 +72,12 @@ class System:
             # set the trajectory comming from user input
             controller.set_trajectory(self.trajectory)
             time.sleep(1.01)
-            robot_moving = 2 if controller.is_robot_move() else 0
-            time.sleep(robot_moving)
-            # time_moving_robot = controller.get_total_time_moving()
-            # # print(time_moving_robot)
-            # time.sleep(time_moving_robot)
+            controller.sleep_till_move()
+
         while not controller.is_finish_trajectory():
             time.sleep(1.01)
-            robot_moving = 2 if controller.is_robot_move() else 0
-            time.sleep(robot_moving)
-            # time_moving_robot = controller.get_total_time_moving()
-            # # print(time_moving_robot)
-            # time.sleep(time_moving_robot)
-        thread_poll_position = controller.thread_poll_position
-        # thread_poll_position.join()
+            controller.sleep_till_move()
+
         self.calculated_robot_trajectory = controller.get_calculated_robot_trajectory()
 
 
@@ -81,15 +88,6 @@ def test_normal_operation():
     actual_robot_trajectory = sys.get_actual_robot_trajectory()
     calculated_robot_trajectory = sys.calculated_robot_trajectory
 
-    # print("actual_robot_trajectory: ")
-    # print(calculated_robot_trajectory)
-    # print("calculated_robot_trajectory: ")
-    # print(actual_robot_trajectory)
-    # print(np.all(actual_robot_trajectory.shape == calculated_robot_trajectory))
-    # print(actual_robot_trajectory.shape  )
-    # print(calculated_robot_trajectory)
-
-    # np.all(actual_robot_trajectory.shape == calculated_robot_trajectory.shape)
     if np.all(actual_robot_trajectory.shape == calculated_robot_trajectory.shape) and np.all(actual_robot_trajectory == calculated_robot_trajectory):
         print("\n\nvalid test case\n\n")
     else:
