@@ -2,3 +2,4 @@
 *.zip
 # ignore test file
 test.py
+test.ipynb
