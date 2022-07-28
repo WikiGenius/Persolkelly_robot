@@ -5,7 +5,7 @@ Date: 27/07/2022
 '''
 import time
 import numpy as np
-
+import argparse
 from mission_controller_v2 import MissionController
 from mission_controller_v2 import SimulatedRobot
 
@@ -21,11 +21,12 @@ K actual data points for trajectory x,y: line sperated space
 
 
 class System:
-    def __init__(self) -> None:
+    def __init__(self, display=True) -> None:
         self.initial_position = None
         self.trajectory = None
         self.actual_robot_trajectory = []
         self.calculated_robot_trajectory = []
+        self.display = display
 
     def __get_initial_position(self):
         """
@@ -65,8 +66,8 @@ class System:
         self.__get_initial_position()
         if self.initial_position is None:
             raise Exception("Need Initial position")
-        simulated_robot = SimulatedRobot(self.initial_position)
-        controller = MissionController(simulated_robot)
+        simulated_robot = SimulatedRobot(self.initial_position, self.display)
+        controller = MissionController(simulated_robot, self.display)
         for self.trajectory in self.__get_trajectory():
 
             # set the trajectory comming from user input
@@ -86,7 +87,11 @@ class System:
 
 
 def test_normal_operation():
-    sys = System()
+    ap = argparse.ArgumentParser(description="For validation purpose")
+    ap.add_argument('--display', '-d', action='store_false')
+    args = ap.parse_args()
+    display = args.display
+    sys = System(display)
     sys.run_robot()
 
     # load actual path of the robot used in testing cases

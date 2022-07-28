@@ -10,8 +10,10 @@ from threading import Thread
 
 class MissionController:
 
-    def __init__(self, robot):
-        print("Creating MissionController!")
+    def __init__(self, robot, display=True):
+        self.display = display
+        if self.display:
+            print("Creating MissionController!")
 
         # daemon the thread beacuse it has recursion
         # and we need to terminated after main thread finished
@@ -69,8 +71,8 @@ class MissionController:
         self._poll_position()
 
     def _send_navigation_command(self):
-
-        print(f"Sending waypoint {self.current_waypoint_idx}")
+        if self.display:
+            print(f"Sending waypoint {self.current_waypoint_idx}")
         self.calculated_robot_trajectory.append(
             self.trajectory[self.current_waypoint_idx])
         # send the new signal position to the robot
